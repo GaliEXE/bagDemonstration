@@ -1,9 +1,6 @@
 package bagDemonstration;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Bag<T> implements Iterable<T> {
 	private List<T> items;
@@ -21,6 +18,14 @@ public class Bag<T> implements Iterable<T> {
 	 */
 	public void add(T item) {
 		this.items.add(item);
+	}
+	
+	/**
+	 * Method For Getting The Numerical Count Of Elements Within A Bag
+	 * @return number of elements in the bag as an Integer
+	 */
+	public int size() {
+		return this.items.size();
 	}
 	
 	/**
@@ -55,6 +60,37 @@ public class Bag<T> implements Iterable<T> {
 		return count;
 	}
 	
+	
+	/**
+	 * Method For Creating A New Bag That Has Only One Copy Of Each Element In The bag
+	 * @return New Bag With Only One Of Each Item From The Original List
+	 */
+	public Bag<T> distinct(){
+		Bag<T> distinctBag = new Bag<>();
+		Set<T> seen = new HashSet<>();
+		for(T item : this.items) {
+			if(!seen.contains(item)) {
+				seen.add(item);
+				distinctBag.add(item);
+			}
+		}
+		for (T item : distinctBag) {
+			System.out.println("- " + item);
+		}
+		return distinctBag;
+	}
+	
+	/**
+	 * Merges otherBag with NewBag
+	 * @param otherBag Bag 2
+	 */
+	public void merge(Bag<T> otherBag) {
+		for (T item : otherBag) {
+			this.add(item);
+		}
+	}
+	
+	
 	/**
 	 * Iterator Method
 	 */
@@ -70,15 +106,26 @@ public class Bag<T> implements Iterable<T> {
 	public static void main(String[] args) {
 	    boolean runProgram = true;
 	    Scanner scnr = new Scanner(System.in);
+	    /**
+	     * Will Determine Which Bag The Methods Will Affect
+	     * False (Default) Will Edit newBag
+	     * True Will Edit otherBag
+	     */
+	    boolean editBag = false;
 	    Bag<String> newBag = new Bag<>();
+	    Bag<String> otherBag = new Bag<>();
 	    String userInput;
 
 	    System.out.println("Please Choose An Operation");
+	    System.out.println("To Switch Between Bags Type SWITCH");
         System.out.println("To Add An Item To The Bag Please Type ADD");
         System.out.println("To Remove An Item From The Bag Please Type REMOVE");
         System.out.println("To Check For An Item In The Bag Please Type CHECK");
-        System.out.println("To See How Many Duplicate Elements Are In THe Bag Type Count");
+        System.out.println("To Get A Count Of How Many Items Are In The Bag Type SIZE");
+        System.out.println("To See How Many Duplicate Elements Are In THe Bag Type COUNT");
         System.out.println("To List All Current Items Please Type LIST");
+        System.out.println("To Make A Distinct List That Removes Duplicates Type DISTINCT");
+        System.out.println("To Merge Bag 1 And Bag 2 Type MERGE");
         System.out.println("To Close The Program Please Type X");
 	    
         /**
@@ -89,32 +136,80 @@ public class Bag<T> implements Iterable<T> {
 	        String userCMD = scnr.nextLine();
 
 	        switch (userCMD.toLowerCase()) {
+	        	case "switch":
+	        		if(editBag == false) {
+	        			editBag = true;
+	        			System.out.println("Now Editing Bag 2");
+	        		} else {
+	        			editBag = false;
+	        			System.out.println("Now Editing Bag 1");
+	        		}
+	        		break;
 	            case "add":
 	                System.out.print("Enter item to add: ");
 	                userInput = scnr.nextLine();
-	                newBag.add(userInput);
+	                if(editBag == false) {
+	                	newBag.add(userInput);	
+	                } else {
+	                	otherBag.add(userInput);
+	                }
 	                break;
 	            case "remove":
 	                System.out.print("Enter item to remove: ");
 	                userInput = scnr.nextLine();
-	                newBag.remove(userInput);
+	                if(editBag == false) {
+	                	newBag.remove(userInput);
+	                } else {
+	                	otherBag.remove(userInput);
+	                }
 	                break;
 	            case "check":
 	                System.out.print("Enter item to check: ");
 	                userInput = scnr.nextLine();
-	                System.out.println(newBag.contains(userInput) ? "Item is in the bag." : "Item not found.");
-	                break;
+	                if(editBag == false) {
+	                	System.out.println(newBag.contains(userInput) ? "Item is in the bag." : "Item not found.");	
+	                } else {
+	                	System.out.println(otherBag.contains(userInput) ? "Item is in the bag." : "Item not found.");	
+	                }
+	            case "size":
+	            	if(editBag == false) {
+		            	System.out.println("There Are " + newBag.size() + " Items In The Bag!");	
+	            	} else {
+		            	System.out.println("There Are " + otherBag.size() + " Items In The Bag!");
+	            	}
+	            	break;
 	            case "count":
 	            	System.out.print("Enter item to count: ");
 	            	userInput = scnr.nextLine();
-	            	System.out.println(newBag.count(userInput));
+	            	if(editBag == false) {
+	            		System.out.println(newBag.count(userInput));	
+	            	} else {
+	            		System.out.println(otherBag.count(userInput));
+	            	}
 	            	break;
 	            case "list":
 	                System.out.println("Current items in the bag:");
-	                for (String item : newBag) {
-	                    System.out.println("- " + item);
+	                if(editBag == false) {
+		                for (String item : newBag) {
+		                    System.out.println("- " + item);
+		                }
+	                } else {
+		                for (String item : otherBag) {
+		                    System.out.println("- " + item);
+		                }
 	                }
 	                break;
+	            case "distinct":
+	            	if(editBag == false) {
+	            		newBag.distinct();
+	            	} else {
+	            		otherBag.distinct();
+	            	}
+	            	break;
+	            case "merge":
+	            	newBag.merge(otherBag);
+	            	System.out.println("Bag 2 Successfully Merged");
+	            	break;
 	            case "x":
 	                scnr.close();
 	                runProgram = false;
